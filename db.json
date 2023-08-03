@@ -1,27 +1,16 @@
 {
-  "users": [
-    {
-      "email": null
-    }
-  ],
   "items": [
     {
-      "id": 1,
+      "id": "742cb3bb-01d1-e5bb-9e9d-85327d102c2c",
       "title": "제목1",
       "content": "내용1입니다.",
-      "author": "작성자1"
+      "author": "gogo@naver.com"
     },
     {
-      "id": 2,
-      "title": "제목2",
-      "content": "내용2입니다.",
-      "author": "작성자2"
-    },
-    {
-      "id": 3,
-      "title": "제목3",
-      "content": "내용3입니다.",
-      "author": "작성자3"
+      "id": "51a608e7-c4d4-28c0-c4c2-f6c2f6104895",
+      "title": "제목23",
+      "content": "내용23입니다.",
+      "author": "gogo@naver.com"
     }
   ]
 }

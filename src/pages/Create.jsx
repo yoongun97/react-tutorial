@@ -4,6 +4,8 @@ import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../redux/modules/itemSlice";
+import axios from "axios";
+import uuid from "react-uuid";
 
 export default function Create() {
   // title, content 수정을 위해 useState 선언
@@ -23,11 +25,17 @@ export default function Create() {
     setContent(e.target.value);
   };
 
-  const itemAddHandler = () => {
-    // useDispatch로 변경함수 사용하기
-    // action.payload로 입력된 title, content 객체 보내주기
-    // 현재 로그인된 email currentUser를 action.payload로 보내주기
-    dispatch(addItem({ title, content, user }));
+  const itemAddHandler = async () => {
+    const newItem = {
+      id: uuid(),
+      title: title,
+      content: content,
+      author: user,
+    };
+    // 새로운 item을 데이터베이스에 추가
+    await axios.post("http://localhost:4000/items", newItem);
+    // items에도 추가
+    dispatch(addItem(newItem));
     navigate("/");
   };
 

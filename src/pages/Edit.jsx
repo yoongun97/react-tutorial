@@ -4,6 +4,7 @@ import Container from "../common/Container";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { editItem } from "../redux/modules/itemSlice";
+import axios from "axios";
 
 export default function Edit() {
   const { id } = useParams();
@@ -37,9 +38,21 @@ export default function Edit() {
   };
 
   const itemEditHandler = () => {
+    // action.payload = {title, content, id}
+    const editedItems = items.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            title,
+            content,
+          }
+        : item
+    );
+    const editedItem = editedItems.find((item) => item.id === id);
+    axios.patch(`http://localhost:4000/items/${id}`, editedItem);
     // useDispatch로 변경함수 사용하기
     // action.payload 객체로 변경된 title, content, id 보내주기
-    dispatch(editItem({ title, content, id }));
+    dispatch(editItem(editedItems));
     navigate("/");
   };
 

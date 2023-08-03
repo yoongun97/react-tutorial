@@ -4,6 +4,7 @@ import Container from "../common/Container";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteItem } from "../redux/modules/itemSlice";
+import axios from "axios";
 
 export default function Detail() {
   // props로 로그인된 유저 정보 currentUser 받아오기
@@ -18,14 +19,14 @@ export default function Detail() {
 
   // props 로 넘겨받은 contents 배열에서
   // find 메서드를 사용하여 id값과 일치하는 요소만 가져온다.
-  const item = items.find((item) => {
-    return item.id === id;
-  });
+  const item = items.find((item) => item.id === id);
 
   // item 삭제 이벤트
   const itemDeleteHandler = (author) => {
     if (user === author) {
       if (window.confirm("삭제할까??")) {
+        // 데이터베이스에서 삭제
+        axios.delete(`http://localhost:4000/items/${id}`);
         // useDispatch로 변경함수 사용하기
         // action.payload로 id 보내주기
         dispatch(deleteItem(id));

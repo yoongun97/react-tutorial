@@ -4,6 +4,7 @@ import Header from "../common/Header";
 import Container from "../common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteItem } from "../redux/modules/itemSlice";
+import axios from "axios";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ export default function Main() {
     if (user === author) {
       // 코드가 많을 때 if를 중첩하지 않는 방법
       if (window.confirm("삭제할까??")) {
+        // 데이터베이스에서 삭제
+        axios.delete(`http://localhost:4000/items/${id}`);
         // useDispatch로 변경함수 사용하기
         // action.payload로 id 보내주기
         dispatch(deleteItem(id));
