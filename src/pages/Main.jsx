@@ -5,17 +5,18 @@ import Container from "../common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteItem } from "../redux/modules/itemSlice";
 
-export default function Main({ currentUser }) {
-  // props로 로그인된 유저 정보 currentUser 받아오기
+export default function Main() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // 데이터 가져오기
   const items = useSelector((state) => state.Items);
+  const user = useSelector((state) => state.User.email);
 
   // item 삭제 이벤트
   const itemDeleteHandler = (id, author) => {
-    if (currentUser === author) {
+    if (user === author) {
+      // 코드가 많을 때 if를 중첩하지 않는 방법
       if (window.confirm("삭제할까??")) {
         // useDispatch로 변경함수 사용하기
         // action.payload로 id 보내주기
@@ -40,7 +41,7 @@ export default function Main({ currentUser }) {
           <button
             onClick={() => {
               // 추가버튼 클릭 시 로그인 여부 확인
-              if (currentUser) {
+              if (user) {
                 navigate("/create");
               } else {
                 alert("로그인이 필요합니다.");
@@ -111,7 +112,7 @@ export default function Main({ currentUser }) {
               <div>
                 <button
                   onClick={() => {
-                    if (currentUser === item.author) {
+                    if (user === item.author) {
                       navigate(`/edit/${item.id}`);
                     } else {
                       alert("해당 글의 작성자가 아닙니다.");

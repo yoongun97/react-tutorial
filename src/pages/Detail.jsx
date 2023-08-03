@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteItem } from "../redux/modules/itemSlice";
 
-export default function Detail({ currentUser }) {
+export default function Detail() {
   // props로 로그인된 유저 정보 currentUser 받아오기
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -14,6 +14,7 @@ export default function Detail({ currentUser }) {
 
   // 데이터 가져오기
   const items = useSelector((state) => state.Items);
+  const user = useSelector((state) => state.User.email);
 
   // props 로 넘겨받은 contents 배열에서
   // find 메서드를 사용하여 id값과 일치하는 요소만 가져온다.
@@ -23,7 +24,7 @@ export default function Detail({ currentUser }) {
 
   // item 삭제 이벤트
   const itemDeleteHandler = (author) => {
-    if (currentUser === author) {
+    if (user === author) {
       if (window.confirm("삭제할까??")) {
         // useDispatch로 변경함수 사용하기
         // action.payload로 id 보내주기
@@ -66,7 +67,7 @@ export default function Detail({ currentUser }) {
         >
           <button
             onClick={() => {
-              if (currentUser === item?.author) {
+              if (user === item?.author) {
                 navigate(`/edit/${item.id}`);
               } else {
                 alert("해당 글의 작성자가 아닙니다.");

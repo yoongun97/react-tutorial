@@ -2,15 +2,17 @@ import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../redux/modules/itemSlice";
 
-export default function Create({ currentUser }) {
+export default function Create() {
   // title, content 수정을 위해 useState 선언
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.User.email);
 
   // input title, content 수정사항 반영하기
   const titleChangeHandler = (e) => {
@@ -25,7 +27,7 @@ export default function Create({ currentUser }) {
     // useDispatch로 변경함수 사용하기
     // action.payload로 입력된 title, content 객체 보내주기
     // 현재 로그인된 email currentUser를 action.payload로 보내주기
-    dispatch(addItem({ title, content, currentUser }));
+    dispatch(addItem({ title, content, user }));
     navigate("/");
   };
 

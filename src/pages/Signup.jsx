@@ -43,6 +43,7 @@ export default function Signup() {
       } catch (error) {
         // 회원가입 에러 발생시 에러메시지 출력
         const errorCode = error.code;
+        // error 코드에 맞는 메시지를 한글로 바꿔서 보여주기
         const errorMessage = error.message;
         console.log(errorCode);
         alert("가입에 실패했습니다.\n" + errorMessage);

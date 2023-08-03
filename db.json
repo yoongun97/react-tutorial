@@ -1,10 +1,27 @@
 {
-  "posts": [
+  "users": [
+    {
+      "email": null
+    }
+  ],
+  "items": [
     {
       "id": 1,
-      "title": "제목예시",
-      "content": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Lorem ipsum dolor, sit amet consectetur adipisicing elit.Lorem ipsum dolor, sit amet consectetur adipisicing elit.Lorem ipsum dolor, sit amet consectetur adipisicing elit.",
-      "author": "abc@naver.com"
+      "title": "제목1",
+      "content": "내용1입니다.",
+      "author": "작성자1"
+    },
+    {
+      "id": 2,
+      "title": "제목2",
+      "content": "내용2입니다.",
+      "author": "작성자2"
+    },
+    {
+      "id": 3,
+      "title": "제목3",
+      "content": "내용3입니다.",
+      "author": "작성자3"
     }
   ]
 }

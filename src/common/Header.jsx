@@ -1,35 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { auth } from "../firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../redux/modules/userSlice";
 
 export default function Header() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.User.email);
 
   // 로그아웃 함수
   const logout = async () => {
     alert("로그아웃 할까?");
     await signOut(auth);
-    setCurrentUser(null);
+    dispatch(setUser({ email: null }));
   };
-
-  useEffect(() => {
-    // 사용자의 로그인 상태 변경 감지
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          setCurrentUser(user.email);
-        } catch (error) {
-          console.log("사용자 정보를 가져오는 데 실패했습니다.\n", error);
-        }
-      } else {
-        setCurrentUser(null); // 로그인되지 않은 상태면 null로 설정
-      }
-    });
-    return () => unsubscribe(); // 컴포넌트 언마운트 시 이벤트 구독 해제
-  }, []);
 
   return (
     <header
@@ -60,7 +47,7 @@ export default function Header() {
         }}
       >
         {/* 로그인 된 유저가 있을 시 로그아웃, 이메일 버튼 보여주기 */}
-        {currentUser ? (
+        {user ? (
           <>
             <button
               style={{
@@ -81,7 +68,7 @@ export default function Header() {
                 cursor: "pointer",
               }}
             >
-              {currentUser}
+              {user}
             </button>
           </>
         ) : (
