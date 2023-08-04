@@ -3,8 +3,8 @@ import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import api from "../axios/api";
 
 export default function Detail() {
   // props로 로그인된 유저 정보 currentUser 받아오기
@@ -16,28 +16,23 @@ export default function Detail() {
   // axios를 통해서 get 요청을 하는 함수를 생성합니다.
   // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
   const { data, isLoading, isError, error } = useQuery("items", async () => {
-    const response = await axios.get("http://localhost:4000/items");
+    const response = await api.get(`/items`, { params: { id } });
     return response.data;
   });
+  const [item] = data;
 
   // 데이터 가져오기
   const user = useSelector((state) => state.User.email);
 
-  // props 로 넘겨받은 contents 배열에서
-  // find 메서드를 사용하여 id값과 일치하는 요소만 가져온다.
-  const item = data.find((item) => item.id === id);
-
   // item 삭제 이벤트
   const mutation = useMutation(
     async (author) => {
-      if (user === author) {
-        if (window.confirm("삭제할까??")) {
-          // 데이터베이스에서 삭제
-          axios.delete(`http://localhost:4000/items/${id}`);
-          navigate("/");
-        }
-      } else {
+      if (user !== author) {
         alert("해당 글의 작성자가 아닙니다.");
+      } else if (window.confirm("삭제할까??")) {
+        // 데이터베이스에서 삭제
+        api.delete(`/items/${id}`);
+        navigate("/");
       }
     },
     // 데이터 추가 후 화면 바로 변경
