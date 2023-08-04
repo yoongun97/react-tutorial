@@ -3,9 +3,9 @@ import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import uuid from "react-uuid";
 import { useMutation, useQueryClient } from "react-query";
+import api from "../axios/api";
 
 export default function Create() {
   // title, content 수정을 위해 useState 선언
@@ -23,7 +23,7 @@ export default function Create() {
         author: user,
       };
       // 새로운 item을 데이터베이스에 추가
-      await axios.post("http://localhost:4000/items", newItem);
+      await api.post("/items", newItem);
       // items에도 추가
       navigate("/");
     },

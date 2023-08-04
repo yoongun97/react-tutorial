@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../axios/api";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 export default function Edit() {
@@ -13,7 +13,7 @@ export default function Edit() {
   // axios를 통해서 get 요청을 하는 함수를 생성합니다.
   // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
   const { data, isLoading, isError, error } = useQuery("items", async () => {
-    const response = await axios.get("http://localhost:4000/items");
+    const response = await api.get("/items");
     return response.data;
   });
 
@@ -52,7 +52,7 @@ export default function Edit() {
           : item
       );
       const editedItem = editedItems.find((item) => item.id === id);
-      axios.patch(`http://localhost:4000/items/${id}`, editedItem);
+      api.patch(`/items/${id}`, editedItem);
       navigate("/");
     },
     // 데이터 추가 후 화면 바로 변경
