@@ -1,10 +1,16 @@
 {
-  "posts": [
+  "items": [
     {
-      "id": 1,
-      "title": "제목예시",
-      "content": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Lorem ipsum dolor, sit amet consectetur adipisicing elit.Lorem ipsum dolor, sit amet consectetur adipisicing elit.Lorem ipsum dolor, sit amet consectetur adipisicing elit.",
-      "author": "abc@naver.com"
+      "id": "74633c28-523e-4c40-dc4e-20597796aebe",
+      "title": "제목34",
+      "content": "내용34입니다.",
+      "author": "gogo@naver.com"
+    },
+    {
+      "id": "c9f3ebdc-fbf5-dd41-7f68-969a463c0e74",
+      "title": "제목12",
+      "content": "내용12입니다.",
+      "author": "gogo@naver.com"
     }
   ]
 }

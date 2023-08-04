@@ -2,15 +2,40 @@ import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addItem } from "../redux/modules/itemSlice";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import uuid from "react-uuid";
+import { useMutation, useQueryClient } from "react-query";
 
-export default function Create({ currentUser }) {
+export default function Create() {
   // title, content 수정을 위해 useState 선언
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const queryClient = new useQueryClient();
+
+  const mutation = useMutation(
+    async () => {
+      const newItem = {
+        id: uuid(),
+        title: title,
+        content: content,
+        author: user,
+      };
+      // 새로운 item을 데이터베이스에 추가
+      await axios.post("http://localhost:4000/items", newItem);
+      // items에도 추가
+      navigate("/");
+    },
+    // 데이터 추가 후 화면 바로 변경
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("items");
+      },
+    }
+  );
+
+  const user = useSelector((state) => state.User.email);
 
   // input title, content 수정사항 반영하기
   const titleChangeHandler = (e) => {
@@ -19,14 +44,6 @@ export default function Create({ currentUser }) {
 
   const contentChangeHandler = (e) => {
     setContent(e.target.value);
-  };
-
-  const itemAddHandler = () => {
-    // useDispatch로 변경함수 사용하기
-    // action.payload로 입력된 title, content 객체 보내주기
-    // 현재 로그인된 email currentUser를 action.payload로 보내주기
-    dispatch(addItem({ title, content, currentUser }));
-    navigate("/");
   };
 
   return (
@@ -42,7 +59,7 @@ export default function Create({ currentUser }) {
           }}
           onSubmit={(e) => {
             e.preventDefault();
-            itemAddHandler();
+            mutation.mutate();
           }}
         >
           <div>
