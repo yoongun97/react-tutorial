@@ -28,13 +28,15 @@ export default function Main() {
         alert("해당 글의 작성자가 아닙니다.");
       } else if (window.confirm("삭제할까??")) {
         // 데이터베이스에서 삭제
-        api.delete(`/items/${id}`);
+        await api.delete(`/items/${id}`);
       }
     },
     // 데이터 추가 후 화면 바로 변경
     {
       onSuccess: () => {
         queryClient.invalidateQueries("items");
+        // 기존에 있던 쿼리를 없애고 새로 가져온다. => 무효화
+        // useQuery의 이름과 맞춰줘야 한다. ex."items"
       },
     }
   );

@@ -15,11 +15,15 @@ export default function Detail() {
 
   // axios를 통해서 get 요청을 하는 함수를 생성합니다.
   // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
-  const { data, isLoading, isError, error } = useQuery("items", async () => {
-    const response = await api.get(`/items`, { params: { id } });
-    return response.data;
-  });
-  const [item] = data;
+  const { data, isLoading, isError, error } = useQuery(
+    ["items", id],
+    async () => {
+      const response = await api.get(`/items/${id}`);
+      // useQuery 이름 다르게
+      // data 가져오기 안됨
+      return response.data;
+    }
+  );
 
   // 데이터 가져오기
   const user = useSelector((state) => state.User.email);
@@ -31,14 +35,14 @@ export default function Detail() {
         alert("해당 글의 작성자가 아닙니다.");
       } else if (window.confirm("삭제할까??")) {
         // 데이터베이스에서 삭제
-        api.delete(`/items/${id}`);
+        await api.delete(`/items/${id}`);
         navigate("/");
       }
     },
     // 데이터 추가 후 화면 바로 변경
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("items");
+        queryClient.invalidateQueries(["items", id]);
       },
     }
   );
@@ -54,7 +58,7 @@ export default function Detail() {
   return (
     <>
       <Header />
-      <Container key={item?.id}>
+      <Container key={data?.id}>
         <h1
           style={{
             border: "1px solid lightgray",
@@ -62,7 +66,7 @@ export default function Detail() {
             padding: "12px",
           }}
         >
-          {item?.title}
+          {data?.title}
         </h1>
         <div
           style={{
@@ -72,7 +76,7 @@ export default function Detail() {
             padding: "12px",
           }}
         >
-          {item?.content}
+          {data?.content}
         </div>
         <div
           style={{
@@ -83,8 +87,8 @@ export default function Detail() {
         >
           <button
             onClick={() => {
-              if (user === item?.author) {
-                navigate(`/edit/${item.id}`);
+              if (user === data?.author) {
+                navigate(`/edit/${data.id}`);
               } else {
                 alert("해당 글의 작성자가 아닙니다.");
               }
@@ -103,7 +107,7 @@ export default function Detail() {
           </button>
           <button
             onClick={() => {
-              mutation.mutate(item?.author);
+              mutation.mutate(data?.author);
             }}
             style={{
               border: "none",

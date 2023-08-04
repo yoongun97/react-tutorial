@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth } from "../lib/firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { LOGIN_ERROR_CODES } from "../lib/firebase/error";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -33,10 +34,11 @@ export default function Login() {
         await signInWithEmailAndPassword(auth, email, password);
         navigate("/");
       } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        alert("로그인에 실패했습니다.\n" + errorMessage);
+        if (LOGIN_ERROR_CODES[error.code]) {
+          return alert(LOGIN_ERROR_CODES[error.code]);
+        } else {
+          return alert("알 수 없는 에러입니다. 나중에 다시 시도해보세요.");
+        }
       }
     }
   };

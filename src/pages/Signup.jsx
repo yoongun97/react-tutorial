@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth } from "../lib/firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { SIGNUP_ERROR_CODES } from "../lib/firebase/error";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -41,12 +42,11 @@ export default function Signup() {
         alert("가입되었습니다");
         navigate("/");
       } catch (error) {
-        // 회원가입 에러 발생시 에러메시지 출력
-        const errorCode = error.code;
-        // error 코드에 맞는 메시지를 한글로 바꿔서 보여주기
-        const errorMessage = error.message;
-        console.log(errorCode);
-        alert("가입에 실패했습니다.\n" + errorMessage);
+        if (SIGNUP_ERROR_CODES[error.code]) {
+          return alert(SIGNUP_ERROR_CODES[error.code]);
+        } else {
+          return alert("알 수 없는 에러입니다. 나중에 다시 시도해보세요.");
+        }
       }
     }
   };

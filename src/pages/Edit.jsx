@@ -12,23 +12,21 @@ export default function Edit() {
 
   // axios를 통해서 get 요청을 하는 함수를 생성합니다.
   // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
-  const { data, isLoading, isError, error } = useQuery("items", async () => {
-    const response = await api.get("/items");
-    return response.data;
-  });
-
-  // props 로 넘겨받은 contents 배열에서
-  // find 메서드를 사용하여 id값과 일치하는 요소만 가져온다.
-  const item = data.find((item) => {
-    return item.id === id;
-  });
+  const { data, isLoading, isError, error } = useQuery(
+    ["items", id],
+    async () => {
+      // useQuery 이름 바꾸기
+      const response = await api.get(`/items/${id}`);
+      // 데이터 하나만 가져오기
+      setTitle(response.data.title);
+      setContent(response.data.content);
+      return response.data;
+    }
+  );
 
   // title, content 수정을 위해 useState 선언
-  // or연산자를 활용해 undefined 일때는 빈 문자열을 초기값으로
-  let initTitle = item?.title || "";
-  let initContent = item?.content || "";
-  const [title, setTitle] = useState(initTitle);
-  const [content, setContent] = useState(initContent);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const navigate = useNavigate();
 
   // input title, content 수정사항 반영하기
@@ -42,23 +40,18 @@ export default function Edit() {
 
   const mutation = useMutation(
     async () => {
-      const editedItems = data.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              title,
-              content,
-            }
-          : item
-      );
-      const editedItem = editedItems.find((item) => item.id === id);
+      const editedItem = {
+        ...data,
+        title,
+        content,
+      };
       api.patch(`/items/${id}`, editedItem);
       navigate("/");
     },
     // 데이터 추가 후 화면 바로 변경
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("items");
+        queryClient.invalidateQueries(["items", id]);
       },
     }
   );
