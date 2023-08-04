@@ -16,16 +16,13 @@ export default function Detail() {
   // axios를 통해서 get 요청을 하는 함수를 생성합니다.
   // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
   const { data, isLoading, isError, error } = useQuery("items", async () => {
-    const response = await api.get(`/items`);
+    const response = await api.get(`/items`, { params: { id } });
     return response.data;
   });
+  const [item] = data;
 
   // 데이터 가져오기
   const user = useSelector((state) => state.User.email);
-
-  // props 로 넘겨받은 contents 배열에서
-  // find 메서드를 사용하여 id값과 일치하는 요소만 가져온다.
-  const item = data.find((item) => item.id === id);
 
   // item 삭제 이벤트
   const mutation = useMutation(

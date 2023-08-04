@@ -2,14 +2,14 @@
   "items": [
     {
       "id": "74633c28-523e-4c40-dc4e-20597796aebe",
-      "title": "제목34",
-      "content": "내용34입니다.",
+      "title": "제목3",
+      "content": "내용3입니다.",
       "author": "gogo@naver.com"
     },
     {
       "id": "c9f3ebdc-fbf5-dd41-7f68-969a463c0e74",
-      "title": "제목12",
-      "content": "내용12입니다.",
+      "title": "제목123",
+      "content": "내용123입니다.",
       "author": "gogo@naver.com"
     }
   ]
