@@ -27,14 +27,12 @@ export default function Detail() {
   // item 삭제 이벤트
   const mutation = useMutation(
     async (author) => {
-      if (user === author) {
-        if (window.confirm("삭제할까??")) {
-          // 데이터베이스에서 삭제
-          api.delete(`/items/${id}`);
-          navigate("/");
-        }
-      } else {
+      if (user !== author) {
         alert("해당 글의 작성자가 아닙니다.");
+      } else if (window.confirm("삭제할까??")) {
+        // 데이터베이스에서 삭제
+        api.delete(`/items/${id}`);
+        navigate("/");
       }
     },
     // 데이터 추가 후 화면 바로 변경

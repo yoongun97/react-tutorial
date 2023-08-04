@@ -11,6 +11,12 @@
       "title": "제목123",
       "content": "내용123입니다.",
       "author": "gogo@naver.com"
+    },
+    {
+      "id": "48944785-e1d8-ab65-9cb1-8c91a25b563d",
+      "title": "제목1",
+      "content": "내용1입니다.",
+      "author": "toto@naver.com"
     }
   ]
 }

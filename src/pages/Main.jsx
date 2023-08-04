@@ -24,13 +24,11 @@ export default function Main() {
   const mutation = useMutation(
     async (data) => {
       const { id, author } = data;
-      if (user === author) {
-        if (window.confirm("삭제할까??")) {
-          // 데이터베이스에서 삭제
-          api.delete(`/items/${id}`);
-        }
-      } else {
+      if (user !== author) {
         alert("해당 글의 작성자가 아닙니다.");
+      } else if (window.confirm("삭제할까??")) {
+        // 데이터베이스에서 삭제
+        api.delete(`/items/${id}`);
       }
     },
     // 데이터 추가 후 화면 바로 변경
