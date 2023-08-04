@@ -2,39 +2,59 @@ import React from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteItem } from "../redux/modules/itemSlice";
+import { useSelector } from "react-redux";
 import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 export default function Detail() {
   // props로 로그인된 유저 정보 currentUser 받아오기
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { id } = useParams();
   // useParmas로 url에 넣어준 id를 받아온다.
+  const queryClient = new useQueryClient();
+
+  // axios를 통해서 get 요청을 하는 함수를 생성합니다.
+  // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
+  const { data, isLoading, isError, error } = useQuery("items", async () => {
+    const response = await axios.get("http://localhost:4000/items");
+    return response.data;
+  });
 
   // 데이터 가져오기
-  const items = useSelector((state) => state.Items);
   const user = useSelector((state) => state.User.email);
 
   // props 로 넘겨받은 contents 배열에서
   // find 메서드를 사용하여 id값과 일치하는 요소만 가져온다.
-  const item = items.find((item) => item.id === id);
+  const item = data.find((item) => item.id === id);
 
   // item 삭제 이벤트
-  const itemDeleteHandler = (author) => {
-    if (user === author) {
-      if (window.confirm("삭제할까??")) {
-        // 데이터베이스에서 삭제
-        axios.delete(`http://localhost:4000/items/${id}`);
-        // useDispatch로 변경함수 사용하기
-        // action.payload로 id 보내주기
-        dispatch(deleteItem(id));
+  const mutation = useMutation(
+    async (author) => {
+      if (user === author) {
+        if (window.confirm("삭제할까??")) {
+          // 데이터베이스에서 삭제
+          axios.delete(`http://localhost:4000/items/${id}`);
+          navigate("/");
+        }
+      } else {
+        alert("해당 글의 작성자가 아닙니다.");
       }
-    } else {
-      alert("해당 글의 작성자가 아닙니다.");
+    },
+    // 데이터 추가 후 화면 바로 변경
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("items");
+      },
     }
-  };
+  );
+
+  if (isLoading) {
+    return <div>데이터 가져오는 중...</div>;
+  }
+
+  if (isError) {
+    return <div>{error.message}</div>;
+  }
 
   return (
     <>
@@ -88,7 +108,7 @@ export default function Detail() {
           </button>
           <button
             onClick={() => {
-              itemDeleteHandler(item?.author);
+              mutation.mutate(item?.author);
             }}
             style={{
               border: "none",

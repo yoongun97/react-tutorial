@@ -2,33 +2,52 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../common/Header";
 import Container from "../common/Container";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteItem } from "../redux/modules/itemSlice";
 import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useSelector } from "react-redux";
 
 export default function Main() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const queryClient = new useQueryClient();
+
+  // axios를 통해서 get 요청을 하는 함수를 생성합니다.
+  // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
+  const { data, isLoading, isError, error } = useQuery("items", async () => {
+    const response = await axios.get("http://localhost:4000/items");
+    return response.data;
+  });
 
   // 데이터 가져오기
-  const items = useSelector((state) => state.Items);
   const user = useSelector((state) => state.User.email);
 
   // item 삭제 이벤트
-  const itemDeleteHandler = (id, author) => {
-    if (user === author) {
-      // 코드가 많을 때 if를 중첩하지 않는 방법
-      if (window.confirm("삭제할까??")) {
-        // 데이터베이스에서 삭제
-        axios.delete(`http://localhost:4000/items/${id}`);
-        // useDispatch로 변경함수 사용하기
-        // action.payload로 id 보내주기
-        dispatch(deleteItem(id));
+  const mutation = useMutation(
+    async (data) => {
+      const { id, author } = data;
+      if (user === author) {
+        if (window.confirm("삭제할까??")) {
+          // 데이터베이스에서 삭제
+          axios.delete(`http://localhost:4000/items/${id}`);
+        }
+      } else {
+        alert("해당 글의 작성자가 아닙니다.");
       }
-    } else {
-      alert("해당 글의 작성자가 아닙니다.");
+    },
+    // 데이터 추가 후 화면 바로 변경
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("items");
+      },
     }
-  };
+  );
+
+  if (isLoading) {
+    return <div>데이터 가져오는 중...</div>;
+  }
+
+  if (isError) {
+    return <div>{error.message}</div>;
+  }
 
   return (
     <>
@@ -66,7 +85,7 @@ export default function Main() {
         userState로 정의한 list 배열을 map함수로 펼쳐준다.
         list 배열의 요소(객체)의 데이터를 보여주고, 배열 내의 모든 요소에 해당 과정을 반복한다. 
         */}
-        {items.map((item) => (
+        {data.map((item) => (
           <div
             // map 내부에 고유의 key값 부여
             key={item.id}
@@ -136,7 +155,7 @@ export default function Main() {
                 <button
                   onClick={() => {
                     // 삭제할 item을 특정하기 위해 해당 버튼이 있는 item의 id를 보내준다.
-                    itemDeleteHandler(item.id, item.author);
+                    mutation.mutate({ id: item.id, author: item.author });
                   }}
                   style={{
                     border: "none",

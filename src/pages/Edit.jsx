@@ -2,20 +2,24 @@ import React, { Fragment, useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { editItem } from "../redux/modules/itemSlice";
 import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 export default function Edit() {
   const { id } = useParams();
   // useParmas로 url에 넣어준 id를 받아온다.
+  const queryClient = new useQueryClient();
 
-  // 데이터 가져오기
-  const items = useSelector((state) => state.Items);
+  // axios를 통해서 get 요청을 하는 함수를 생성합니다.
+  // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
+  const { data, isLoading, isError, error } = useQuery("items", async () => {
+    const response = await axios.get("http://localhost:4000/items");
+    return response.data;
+  });
 
   // props 로 넘겨받은 contents 배열에서
   // find 메서드를 사용하여 id값과 일치하는 요소만 가져온다.
-  const item = items.find((item) => {
+  const item = data.find((item) => {
     return item.id === id;
   });
 
@@ -26,7 +30,6 @@ export default function Edit() {
   const [title, setTitle] = useState(initTitle);
   const [content, setContent] = useState(initContent);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   // input title, content 수정사항 반영하기
   const titleChangeHandler = (e) => {
@@ -37,24 +40,36 @@ export default function Edit() {
     setContent(e.target.value);
   };
 
-  const itemEditHandler = () => {
-    // action.payload = {title, content, id}
-    const editedItems = items.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            title,
-            content,
-          }
-        : item
-    );
-    const editedItem = editedItems.find((item) => item.id === id);
-    axios.patch(`http://localhost:4000/items/${id}`, editedItem);
-    // useDispatch로 변경함수 사용하기
-    // action.payload 객체로 변경된 title, content, id 보내주기
-    dispatch(editItem(editedItems));
-    navigate("/");
-  };
+  const mutation = useMutation(
+    async () => {
+      const editedItems = data.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              title,
+              content,
+            }
+          : item
+      );
+      const editedItem = editedItems.find((item) => item.id === id);
+      axios.patch(`http://localhost:4000/items/${id}`, editedItem);
+      navigate("/");
+    },
+    // 데이터 추가 후 화면 바로 변경
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("items");
+      },
+    }
+  );
+
+  if (isLoading) {
+    return <div>데이터 가져오는 중...</div>;
+  }
+
+  if (isError) {
+    return <div>{error.message}</div>;
+  }
 
   return (
     <Fragment>
@@ -69,7 +84,7 @@ export default function Edit() {
           }}
           onSubmit={(e) => {
             e.preventDefault();
-            itemEditHandler();
+            mutation.mutate();
           }}
         >
           <div>

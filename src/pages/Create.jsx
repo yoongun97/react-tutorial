@@ -2,17 +2,38 @@ import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addItem } from "../redux/modules/itemSlice";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import uuid from "react-uuid";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Create() {
   // title, content 수정을 위해 useState 선언
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const queryClient = new useQueryClient();
+
+  const mutation = useMutation(
+    async () => {
+      const newItem = {
+        id: uuid(),
+        title: title,
+        content: content,
+        author: user,
+      };
+      // 새로운 item을 데이터베이스에 추가
+      await axios.post("http://localhost:4000/items", newItem);
+      // items에도 추가
+      navigate("/");
+    },
+    // 데이터 추가 후 화면 바로 변경
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("items");
+      },
+    }
+  );
 
   const user = useSelector((state) => state.User.email);
 
@@ -23,20 +44,6 @@ export default function Create() {
 
   const contentChangeHandler = (e) => {
     setContent(e.target.value);
-  };
-
-  const itemAddHandler = async () => {
-    const newItem = {
-      id: uuid(),
-      title: title,
-      content: content,
-      author: user,
-    };
-    // 새로운 item을 데이터베이스에 추가
-    await axios.post("http://localhost:4000/items", newItem);
-    // items에도 추가
-    dispatch(addItem(newItem));
-    navigate("/");
   };
 
   return (
@@ -52,7 +59,7 @@ export default function Create() {
           }}
           onSubmit={(e) => {
             e.preventDefault();
-            itemAddHandler();
+            mutation.mutate();
           }}
         >
           <div>

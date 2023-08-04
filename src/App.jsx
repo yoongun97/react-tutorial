@@ -10,24 +10,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { useDispatch } from "react-redux";
 import { setUser } from "./redux/modules/userSlice";
-import { setItem } from "./redux/modules/itemSlice";
-import axios from "axios";
-import { useQuery } from "react-query";
 
 function App() {
   const dispatch = useDispatch();
-
-  // axios를 통해서 get 요청을 하는 함수를 생성합니다.
-  // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
-  const fetchItems = useQuery("items", async () => {
-    const { data } = await axios.get("http://localhost:4000/items");
-    // 데이터를 받아오고 받아온 데이터를 items에 넣어준다.
-    dispatch(setItem(data));
-  });
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
 
   useEffect(() => {
     // 사용자의 로그인 상태 변경 감지

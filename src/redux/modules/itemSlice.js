@@ -8,9 +8,6 @@ const items = createSlice({
   // 3. reducers 추가
   reducers: {
     // 4. reducer 안에 변경함수 만들기
-    setItem: (state, action) => {
-      return [...action.payload];
-    },
     addItem: (state, action) => {
       // action.payload = {title, content}
       return [...state, action.payload];
